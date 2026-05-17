@@ -553,7 +553,13 @@
           <p class="wechat-hint">或添加微信：<strong>fengfan17168</strong></p>
         </div>
 
-        <form id="lead-form" novalidate>
+        <form
+          id="lead-form"
+          action="https://formspree.io/f/xykvgnno"
+          method="POST"
+          novalidate
+        >
+          <input type="hidden" name="_subject" value="【风帆获客】新客户咨询" />
           <div class="form-group" id="name-group">
             <label for="name">姓名</label>
             <input type="text" id="name" name="name" placeholder="请输入您的姓名" autocomplete="name" />
@@ -627,12 +633,29 @@
         submitBtn.disabled = true;
         submitBtn.textContent = "提交中…";
 
-        setTimeout(function () {
-          form.classList.add("hidden");
-          successEl.classList.add("show");
-          submitBtn.disabled = false;
-          submitBtn.textContent = "立即获取方案";
-        }, 800);
+        fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        })
+          .then(function (response) {
+            if (response.ok) {
+              form.classList.add("hidden");
+              successEl.classList.add("show");
+              form.reset();
+              return;
+            }
+            return response.json().then(function (data) {
+              throw new Error(data.error || "提交失败，请稍后重试");
+            });
+          })
+          .catch(function () {
+            alert("提交失败，请检查网络后重试，或直接添加微信 fengfan17168 咨询。");
+          })
+          .finally(function () {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "立即获取方案";
+          });
       });
     })();
   </script>
